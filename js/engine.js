@@ -136,6 +136,16 @@ var Engine = (function(global) {
             }
         }
 
+        //Renders a scoreboard, current level, and lives counter at the top of the page with a white background and blue text
+        ctx.textBaseline = 'top';
+        ctx.font = "32px Arial"
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, 550, 50);
+        ctx.fillStyle = "blue";
+        ctx.fillText("Score: " + player.score, 15, 15);
+        ctx.fillText("Lives: " + player.lives, 375, 15);
+        ctx.fillText("Level: " + player.level, 200, 15);
+
         renderEntities();
     }
 
@@ -147,11 +157,14 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        item.render();
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 
         player.render();
+        reset();
+
     }
 
     /* This function does nothing but it could have been a good place to
@@ -159,7 +172,16 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        if (player.lives == 0) {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height)
+            ctx.fillStyle = "blue";
+            ctx.font = "72px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("GAME OVER", (canvas.width / 2), 150)
+            ctx.font = "44px Arial";
+            ctx.fillText("Your Score is " + player.score, (canvas.width / 2), 225)
+        }
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -171,7 +193,9 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-horn-girl.png'
+        'images/char-horn-girl.png',
+        'images/char-cat-girl.png',
+        'images/Gem Blue.png'
     ]);
     Resources.onReady(init);
 
