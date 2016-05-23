@@ -61,7 +61,7 @@ var Sun = function() {
     obj.y = yLoc();
     obj.level = 7
     obj.update = function() {
-        //checks to see if player
+        //creates movement of Sun class objects on level up
         if (player.level > this.level) {
             obj.x = xLoc();
             obj.y = yLoc();
