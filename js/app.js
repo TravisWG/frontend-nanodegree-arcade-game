@@ -51,8 +51,9 @@ var Rotator = function() {
         }
     }
     return obj
-}
+};
 
+//Creates Sun Enemy class
 var Sun = function() {
     var obj = new Enemy;
     obj.sprite = 'images/Star.png'
@@ -60,10 +61,16 @@ var Sun = function() {
     obj.y = yLoc();
     obj.level = 7
     obj.update = function() {
+        //checks to see if player
         if (player.level > this.level) {
             obj.x = xLoc();
             obj.y = yLoc();
             this.level++
+        //checks to make sure Sun doesn't lay overtop item and gets new Sun coordinates if necessary
+        if (this.x == item.x && this.y == item.y) {
+            obj.x = xLoc();
+            obj.y = yLoc();
+        }
         };
     };
     return obj
@@ -90,6 +97,7 @@ function yLoc() {
         };
     };
 
+//Returns a value to be used in Enemy and Item generation to determine beginning X position
 function xLoc() {
         var num = Math.random() * 100;
         if (num >= 0 && num < 20) {
@@ -114,10 +122,10 @@ function xLoc() {
 function xLocRotator() {
     var num = Math.random() * 100;
     if (num >= 0 && num < 50) {
-        return COL[0]
+        return COL[0];
     }
     if (num >= 50 && num <= 100) {
-        return COL[4]
+        return COL[4];
     }
 }
 
@@ -126,9 +134,7 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+//Creates Player class
 var Player = function() {
     this.sprite = 'images/char-horn-girl.png';
     this.x = this.STARTINGX;
@@ -137,21 +143,22 @@ var Player = function() {
     this.lives = 3;
     this.level = 1;
 }
-
+//Renders player character
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 //Starting position for player
-Player.prototype.STARTINGX = 202
-Player.prototype.STARTINGY = 392
+Player.prototype.STARTINGX = 202;
+Player.prototype.STARTINGY = 392;
 
 Player.prototype.update = function() {
+    //resets player to start, increases level, and spawns new enemy after successfully getting to water
     if (this.y == -23 ) {
         this.score = this.score + 10;
         this.x = this.STARTINGX;
         this.y = this.STARTINGY;
-        this.level = this.level + 1
+        this.level++;
 
         if (this.level < 4 || this.level > 8) {
             allEnemies.push(new Enemy);
@@ -163,64 +170,70 @@ Player.prototype.update = function() {
             allEnemies.push(new Sun);
         }
         if (item.status == 0) {
-            item = new Item
+            item = new Item;
+        }
     }
-    };
 
-    allEnemies.forEach(function(enemy) {
-        if (player.x - enemy.x < 80 && player.x - enemy.x > -70 && player.y == enemy.y) {
-            player.lives = player.lives - 1
-            player.x = player.STARTINGX
-            player.y = player.STARTINGY
-        };
-    });
-
+    //controls scoring and item disappearance when player enters containing square
     if (this.x == item.x && this.y == item.y && item.status == 1) {
         this.score = this.score + item.value;
         item.status = 0;
     }
 };
 
-var xMove = 101
-var yMove = 83
+
+var XMOVE = 101
+var YMOVE = 83
 //handles input from and controls player movement
 Player.prototype.handleInput = function(key){
+    //if statement ensures that all inputs (besides space) cease to function at GAME OVER screen
     if (this.lives > 0){
         if (key == 'left' && this.x > 0) {
-        this.x = (this.x - xMove);
+        this.x = (this.x - XMOVE);
         }
         if (key == 'right' && this.x < 404) {
-            this.x = (this.x + xMove);
+            this.x = (this.x + XMOVE);
         }
         if (key == 'up' && this.y > 0) {
-            this.y = (this.y - yMove);
+            this.y = (this.y - YMOVE);
         }
         if (key == 'down' && this.y < 392) {
-            this.y = (this.y + yMove);
+            this.y = (this.y + YMOVE);
         }
     }
-
+    //allows space bar to initiate a new game
     if (this.lives == 0){
         if (key == 'space') {
             this.lives = 3;
             this.level = 1;
             this.score = 0;
-            allEnemies = [enemy1, enemy2]
+            allEnemies = [enemy1, enemy2];
         }
     }
 }
 
+//collision detection
+var checkCollisions = function(){
+    allEnemies.forEach(function(enemy) {
+        if (player.x - enemy.x < 80 && player.x - enemy.x > -70 && player.y == enemy.y) {
+            player.lives = player.lives - 1;
+            player.x = player.STARTINGX;
+            player.y = player.STARTINGY;
+        }
+    });
+}
+
 // Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
 var enemy1 = new Enemy;
 var enemy2 = new Enemy;
 
-var allEnemies = [enemy1, enemy2]
+// Place all enemy objects in an array called allEnemies
+var allEnemies = [enemy1, enemy2];
 
+// Place the player object in a variable called player
 var player = new Player;
 
-
+//Creates item class
 var Item = function(){
     this.x = xLoc();
     this.y = yLoc();
@@ -229,20 +242,14 @@ var Item = function(){
     this.value = 10;
 }
 
+//Renders items on screen
 Item.prototype.render = function() {
     if (this.status == 1) {
-        ctx.scale(.5, .5)
-        ctx.translate(50, 100)
+        ctx.scale(.5, .5);
+        ctx.translate(50, 100);
         ctx.drawImage(Resources.get(this.sprite), (this.x * 2), (this.y * 2));
-        ctx.translate(-50, -100)
-        ctx.scale(2, 2)
-    }
-};
-
-Item.prototype.update = function(){
-    if (this.x == player.x && this.status == 1) {
-        player.score = player.score + this.value;
-        this.status = 0;
+        ctx.translate(-50, -100);
+        ctx.scale(2, 2);
     }
 };
 

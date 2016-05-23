@@ -81,7 +81,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -175,7 +175,7 @@ var Engine = (function(global) {
     function reset() {
         if (player.lives < 1) {
             ctx.fillStyle = "rgba(25, 25, 25, .9)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height)
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "blue";
             ctx.font = "72px Arial";
             ctx.textAlign = "center";

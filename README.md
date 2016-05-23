@@ -1,6 +1,15 @@
 frontend-nanodegree-arcade-game
 ===============================
 
-Students should use this [rubric](https://www.udacity.com/course/viewer/#!/c-nd001/l-2696458597/m-2687128535) for self-checking their submission.
+The game can be loaded by opening index.html in a web browser.
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+The "up", "down", "left", "right" keys control the movement of the playable character.  The goal is traverse the grass and road and reach the water.
+Reaching the water will advance the player to a more difficult level and increase the player's score.
+
+
+The enemies in the form of a bug, a cat-hat girl, and a exploding star.
+Colliding with an enemy will result in the loss of 1 life.  The playable character starts with 3 lives.
+
+There are pickups in the form of gems that can additionally increase the player's score.
+
+When the player's 3 lives are exhausted, the game is over.
