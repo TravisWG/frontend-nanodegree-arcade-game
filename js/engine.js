@@ -13,6 +13,7 @@
  * the canvas' context (ctx) object globally available to make writing app.js
  * a little simpler to work with.
  */
+var main = function(){};
 
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
@@ -139,12 +140,13 @@ var Engine = (function(global) {
         //Renders a scoreboard, current level, and lives counter at the top of the page with a white background and blue text
         ctx.textBaseline = 'top';
         ctx.font = "32px Arial"
-        ctx.fillStyle = "white";
+        ctx.fillStyle = '#66c84b';
         ctx.fillRect(0, 0, 550, 50);
         ctx.fillStyle = "blue";
-        ctx.fillText("Score: " + player.score, 15, 15);
-        ctx.fillText("Lives: " + player.lives, 375, 15);
-        ctx.fillText("Level: " + player.level, 200, 15);
+        ctx.textAlign = "center";
+        ctx.fillText("Score: " + player.score, 75, 10);
+        ctx.fillText("Lives: " + player.lives, 435, 10);
+        ctx.fillText("Level: " + player.level, 260, 10);
 
         renderEntities();
     }
@@ -155,8 +157,8 @@ var Engine = (function(global) {
      */
     function renderEntities() {
         /* Loop through all of the objects within the allEnemies array and call
-         * the render function you have defined.
-         */
+        * the render function you have defined.
+        */
         item.render();
         allEnemies.forEach(function(enemy) {
             enemy.render();
@@ -164,7 +166,6 @@ var Engine = (function(global) {
 
         player.render();
         reset();
-
     }
 
     /* This function does nothing but it could have been a good place to
@@ -172,17 +173,20 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        if (player.lives == 0) {
-            ctx.fillStyle = "black";
+        if (player.lives < 1) {
+            ctx.fillStyle = "rgba(25, 25, 25, .9)";
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             ctx.fillStyle = "blue";
             ctx.font = "72px Arial";
             ctx.textAlign = "center";
-            ctx.fillText("GAME OVER", (canvas.width / 2), 150)
+            ctx.fillText("GAME OVER", (canvas.width / 2), 150);
             ctx.font = "44px Arial";
-            ctx.fillText("Your Score is " + player.score, (canvas.width / 2), 225)
+            ctx.fillText("Your Score is " + player.score, (canvas.width / 2), 225);
+            ctx.font = "28px Arial underline";
+            ctx.fillText("Press space bar to start a new game", (canvas.width / 2), 300);
         }
     }
+
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
@@ -195,7 +199,8 @@ var Engine = (function(global) {
         'images/enemy-bug.png',
         'images/char-horn-girl.png',
         'images/char-cat-girl.png',
-        'images/Gem Blue.png'
+        'images/Gem Blue.png',
+        'images/Star.png'
     ]);
     Resources.onReady(init);
 

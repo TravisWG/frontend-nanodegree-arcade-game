@@ -22,7 +22,7 @@ Enemy.prototype.update = function(dt) {
     // all computers.
 };
 
-
+//Rotator Enemy class
 var Rotator = function() {
     var obj = new Enemy;
     obj.sprite = "images/char-cat-girl.png";
@@ -31,30 +31,42 @@ var Rotator = function() {
     obj.update = function(dt) {
         //changes movement to down at right wall
         if (this.x >= COL[4] && this.y >= ROW[0]) {
-            console.log("rightwall")
             this.x = COL[4];
             this.y = (this.y + (this.move * dt));
         };
         //changes movement to up at left wall
         if (this.x <= COL[0] && this.y <= ROW[3]) {
-            console.log("left wall")
             this.x = COL[0];
             this.y = (this.y - (this.move * dt));
         }
         //changes movement to right at top wall
         if (this.y <= ROW[0] && this.x >= COL[0]) {
-            console.log("topwall");
             this.y = ROW[0];
             this.x = (this.x + (this.move * dt));
         }
         //changes movement to left at bottom wall
         if (this.y >= ROW[3] && this.x <= COL[4]) {
-            console.log("bottom wall");
             this.y = ROW[3];
             this.x = (this.x - (this.move * dt));
         }
     }
-    return obj;
+    return obj
+}
+
+var Sun = function() {
+    var obj = new Enemy;
+    obj.sprite = 'images/Star.png'
+    obj.x = xLoc();
+    obj.y = yLoc();
+    obj.level = 7
+    obj.update = function() {
+        if (player.level > this.level) {
+            obj.x = xLoc();
+            obj.y = yLoc();
+            this.level++
+        };
+    };
+    return obj
 }
 
 //Constant row and column values for x and y coordinates
@@ -140,13 +152,19 @@ Player.prototype.update = function() {
         this.x = this.STARTINGX;
         this.y = this.STARTINGY;
         this.level = this.level + 1
-        if (this.level < 4) {
-        allEnemies.push(new Enemy);
+
+        if (this.level < 4 || this.level > 8) {
+            allEnemies.push(new Enemy);
         }
-        else {
-        allEnemies.push(new Rotator);
+        if (this.level < 7 && this.level >= 4) {
+            allEnemies.push(new Rotator);
         }
-        console.log(this.level);
+        if (this.level == 7||this.level == 8) {
+            allEnemies.push(new Sun);
+        }
+        if (item.status == 0) {
+            item = new Item
+    }
     };
 
     allEnemies.forEach(function(enemy) {
@@ -156,20 +174,39 @@ Player.prototype.update = function() {
             player.y = player.STARTINGY
         };
     });
+
+    if (this.x == item.x && this.y == item.y && item.status == 1) {
+        this.score = this.score + item.value;
+        item.status = 0;
+    }
 };
 
+var xMove = 101
+var yMove = 83
+//handles input from and controls player movement
 Player.prototype.handleInput = function(key){
-    if (key == 'left' && this.x > 0) {
-        this.x = (this.x - 101);
+    if (this.lives > 0){
+        if (key == 'left' && this.x > 0) {
+        this.x = (this.x - xMove);
+        }
+        if (key == 'right' && this.x < 404) {
+            this.x = (this.x + xMove);
+        }
+        if (key == 'up' && this.y > 0) {
+            this.y = (this.y - yMove);
+        }
+        if (key == 'down' && this.y < 392) {
+            this.y = (this.y + yMove);
+        }
     }
-    if (key == 'right' && this.x < 404) {
-        this.x = (this.x + 101);
-    }
-    if (key == 'up' && this.y > 0) {
-        this.y = (this.y - 83);
-    }
-    if (key == 'down' && this.y < 392) {
-        this.y = (this.y + 83);
+
+    if (this.lives == 0){
+        if (key == 'space') {
+            this.lives = 3;
+            this.level = 1;
+            this.score = 0;
+            allEnemies = [enemy1, enemy2]
+        }
     }
 }
 
@@ -188,14 +225,25 @@ var Item = function(){
     this.x = xLoc();
     this.y = yLoc();
     this.sprite = "images/Gem Blue.png";
+    this.status = 1;
+    this.value = 10;
 }
 
 Item.prototype.render = function() {
-    ctx.scale(.5, .5)
-    ctx.translate(50, 100)
-    ctx.drawImage(Resources.get(this.sprite), (this.x * 2), (this.y * 2));
-    ctx.translate(-50, -100)
-    ctx.scale(2, 2)
+    if (this.status == 1) {
+        ctx.scale(.5, .5)
+        ctx.translate(50, 100)
+        ctx.drawImage(Resources.get(this.sprite), (this.x * 2), (this.y * 2));
+        ctx.translate(-50, -100)
+        ctx.scale(2, 2)
+    }
+};
+
+Item.prototype.update = function(){
+    if (this.x == player.x && this.status == 1) {
+        player.score = player.score + this.value;
+        this.status = 0;
+    }
 };
 
 item = new Item;
@@ -204,6 +252,7 @@ item = new Item;
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
+        32: 'space',
         37: 'left',
         38: 'up',
         39: 'right',
