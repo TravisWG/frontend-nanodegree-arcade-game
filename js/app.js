@@ -1,7 +1,56 @@
 // Enemies our player must avoid
 var Enemy = function() {
     this.x = (Math.random() * 550);
-    this.y = yLoc();
+    this.y = function() {
+        var num = Math.random() * 100;
+        if (num >= 0 && num < 25) {
+            return ROW[0]
+        };
+        if (num >= 25 && num < 50) {
+            return ROW[1]
+        };
+        if (num >= 50 && num < 75) {
+            return ROW[2]
+        };
+        if (num >= 75 && num <= 100) {
+            return ROW[3]
+        };
+    };
+    //Returns a value to be used in Enemygeneration to determine beginning X position
+    this.xLoc = function() {
+        var num = Math.random() * 100;
+        if (num >= 0 && num < 20) {
+            return COL[0]
+        };
+        if (num >= 20 && num < 40) {
+            return COL[1]
+        };
+        if (num >= 40 && num < 60) {
+            return COL[2]
+        };
+        if (num >= 60 && num <= 80) {
+            return COL[3]
+        };
+        if (num >= 80 && num <= 100) {
+            return COL[4]
+        };
+    };
+    //Returns a value to be used in Enemy generation to determine beginning Y position
+    this.yLoc = function() {
+        var num = Math.random() * 100;
+        if (num >= 0 && num < 25) {
+            return ROW[0]
+        };
+        if (num >= 25 && num < 50) {
+            return ROW[1]
+        };
+        if (num >= 50 && num < 75) {
+            return ROW[2]
+        };
+        if (num >= 75 && num <= 100) {
+            return ROW[3]
+        };
+    };
     this.sprite = 'images/enemy-bug.png';
     this.move = (Math.random() * (150 - 50) + 50);
 };
@@ -14,7 +63,7 @@ Enemy.prototype.update = function(dt) {
     this.x = (this.x + (this.move * dt));
     if (this.x > 700) {
         this.x = -100;
-        this.y = yLoc();
+        this.y = this.yLoc();
     }
 
     // You should multiply any movement by the dt parameter
@@ -26,8 +75,19 @@ Enemy.prototype.update = function(dt) {
 var Rotator = function() {
     var obj = new Enemy;
     obj.sprite = "images/char-cat-girl.png";
-    obj.x = xLocRotator();
-    obj.y = yLoc();
+    //Returns a value to be used in Enemy Rotator generation to determine beginning X position
+    //Will return either COL[0] or COL[4] to ensure proper movement of Rotator class object
+    obj.xLoc = function() {
+        var num = Math.random() * 100;
+        if (num >= 0 && num < 50) {
+            return COL[0];
+        };
+        if (num >= 50 && num <= 100) {
+           return COL[4];
+        };
+    };
+    obj.x = obj.xLoc();
+    obj.y = obj.yLoc();
     obj.update = function(dt) {
         //changes movement to down at right wall
         if (this.x >= COL[4] && this.y >= ROW[0]) {
@@ -57,19 +117,17 @@ var Rotator = function() {
 var Sun = function() {
     var obj = new Enemy;
     obj.sprite = 'images/Star.png'
-    obj.x = xLoc();
-    obj.y = yLoc();
     obj.level = 7
     obj.update = function() {
         //creates movement of Sun class objects on level up
         if (player.level > this.level) {
-            obj.x = xLoc();
-            obj.y = yLoc();
+            obj.x = obj.xLoc();
+            obj.y = obj.yLoc();
             this.level++
         //checks to make sure Sun doesn't lay overtop item and gets new Sun coordinates if necessary
         if (this.x == item.x && this.y == item.y) {
-            obj.x = xLoc();
-            obj.y = yLoc();
+            obj.x = obj.xLoc();
+            obj.y = obj.yLoc();
         }
         };
     };
@@ -79,55 +137,6 @@ var Sun = function() {
 //Constant row and column values for x and y coordinates
 var ROW = [60, 143, 226, 309];
 var COL = [0, 101, 202, 303, 404]
-
-//Returns a value to be used in Enemy and Item generation to determine beginning Y position
-function yLoc() {
-        var num = Math.random() * 100;
-        if (num >= 0 && num < 25) {
-            return ROW[0]
-        };
-        if (num >= 25 && num < 50) {
-            return ROW[1]
-        };
-        if (num >= 50 && num < 75) {
-            return ROW[2]
-        };
-        if (num >= 75 && num <= 100) {
-            return ROW[3]
-        };
-    };
-
-//Returns a value to be used in Enemy and Item generation to determine beginning X position
-function xLoc() {
-        var num = Math.random() * 100;
-        if (num >= 0 && num < 20) {
-            return COL[0]
-        };
-        if (num >= 20 && num < 40) {
-            return COL[1]
-        };
-        if (num >= 40 && num < 60) {
-            return COL[2]
-        };
-        if (num >= 60 && num <= 80) {
-            return COL[3]
-        };
-        if (num >= 80 && num <= 100) {
-            return COL[4]
-        };
-    };
-
-//Returns a value to be used in Enemy Rotator generation to determine beginning X position
-//Will return either COL[0] or COL[4] to ensure proper movement of Rotator class object
-function xLocRotator() {
-    var num = Math.random() * 100;
-    if (num >= 0 && num < 50) {
-        return COL[0];
-    }
-    if (num >= 50 && num <= 100) {
-        return COL[4];
-    }
-}
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -235,11 +244,46 @@ var player = new Player;
 
 //Creates item class
 var Item = function(){
-    this.x = xLoc();
-    this.y = yLoc();
     this.sprite = "images/Gem Blue.png";
     this.status = 1;
     this.value = 10;
+    //Returns a value to be used in Item generation to determine beginning X position
+    this.xLoc = function() {
+        var num = Math.random() * 100;
+        if (num >= 0 && num < 20) {
+            return COL[0]
+        };
+        if (num >= 20 && num < 40) {
+            return COL[1]
+        };
+        if (num >= 40 && num < 60) {
+            return COL[2]
+        };
+        if (num >= 60 && num <= 80) {
+            return COL[3]
+        };
+        if (num >= 80 && num <= 100) {
+            return COL[4]
+        };
+    };
+    //Returns a value to be used in Item generation to determine beginning Y position
+    this.yLoc = function() {
+        var num = Math.random() * 100;
+        if (num >= 0 && num < 25) {
+            return ROW[0]
+        };
+        if (num >= 25 && num < 50) {
+            return ROW[1]
+        };
+        if (num >= 50 && num < 75) {
+            return ROW[2]
+        };
+        if (num >= 75 && num <= 100) {
+            return ROW[3]
+        };
+    };
+    this.x = this.xLoc();
+    this.y = this.yLoc();
 }
 
 //Renders items on screen
